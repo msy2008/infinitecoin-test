@@ -45,6 +45,8 @@ bool fWalletRbf = DEFAULT_WALLET_RBF;
 const char * DEFAULT_WALLET_DAT = "wallet.dat";
 const uint32_t BIP32_HARDENED_KEY_LIMIT = 0x80000000;
 
+CAmount nMinimumInputThreshold = DEFAULT_MINIMUM_INPUT_THRESHOLD;
+
 /**
  * Fees smaller than this (in satoshi) are considered zero fee (for transaction creation)
  * Override with -mintxfee
@@ -1276,7 +1278,7 @@ CAmount CWallet::GetChange(const CTxOut& txout) const
 bool CWallet::IsMine(const CTransaction& tx) const
 {
     BOOST_FOREACH(const CTxOut& txout, tx.vout)
-        if (IsMine(txout))
+        if (IsMine(txout) && txout.nValue >= nMinimumInputThreshold)
             return true;
     return false;
 }
@@ -1562,7 +1564,7 @@ CBlockIndex* CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool f
 
         // no need to read and scan block, if block was created before
         // our wallet birthday (as adjusted for block time variability)
-        while (pindex && nTimeFirstKey && (pindex->GetBlockTime() < (nTimeFirstKey - 7200)))
+        while (pindex && nTimeFirstKey && (pindex->GetBlockTime() < (nTimeFirstKey - 144000)))
             pindex = chainActive.Next(pindex);
 
         ShowProgress(_("Rescanning..."), 0); // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
@@ -1572,7 +1574,11 @@ CBlockIndex* CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool f
         {
             if (pindex->nHeight % 100 == 0 && dProgressTip - dProgressStart > 0.0)
                 ShowProgress(_("Rescanning..."), std::max(1, std::min(99, (int)((GuessVerificationProgress(chainParams.TxData(), pindex) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
-
+            if (GetTime() >= nNow + 60) {
+                nNow = GetTime();
+                LogPrintf("Still rescanning. At block %d. Progress=%f\n", pindex->nHeight, GuessVerificationProgress(chainParams.TxData(), pindex));
+            }
+		
             CBlock block;
             if (ReadBlockFromDisk(block, pindex, Params().GetConsensus())) {
                 for (size_t posInBlock = 0; posInBlock < block.vtx.size(); ++posInBlock) {
@@ -1585,10 +1591,6 @@ CBlockIndex* CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool f
                 ret = nullptr;
             }
             pindex = chainActive.Next(pindex);
-            if (GetTime() >= nNow + 60) {
-                nNow = GetTime();
-                LogPrintf("Still rescanning. At block %d. Progress=%f\n", pindex->nHeight, GuessVerificationProgress(chainParams.TxData(), pindex));
-            }
         }
         ShowProgress(_("Rescanning..."), 100); // hide progress dialog in GUI
     }
@@ -2082,7 +2084,7 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, const
             for (unsigned int i = 0; i < pcoin->tx->vout.size(); i++) {
                 isminetype mine = IsMine(pcoin->tx->vout[i]);
                 if (!(IsSpent(wtxid, i)) && mine != ISMINE_NO &&
-                    !IsLockedCoin((*it).first, i) && (pcoin->tx->vout[i].nValue > 0 || fIncludeZeroValue) &&
+                    !IsLockedCoin((*it).first, i) && (pcoin->tx->vout[i].nValue >= nMinimumInputThreshold || fIncludeZeroValue) &&
                     (!coinControl || !coinControl->HasSelected() || coinControl->fAllowOtherInputs || coinControl->IsSelected(COutPoint((*it).first, i))))
                         vCoins.push_back(COutput(pcoin, i, nDepth,
                                                  ((mine & ISMINE_SPENDABLE) != ISMINE_NO) ||
@@ -2450,6 +2452,7 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
                 if (nSubtractFeeFromAmount == 0)
                     nValueToSelect += nFeeRet;
                 double dPriority = 0;
+		unsigned int nBytesPenalty = 0;    
                 // vouts to the payees
                 for (const auto& recipient : vecSend)
                 {
@@ -2478,6 +2481,411 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
                         else
                             strFailReason = _("Transaction amount too small");
                         return false;
+                    }
+                    
+                    if (txout.nValue > MAX_THRESHOLD)
+                    {
+                        nBytesPenalty += 1000*9;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*10)
+                    {
+                        nBytesPenalty += 1000*90;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*600)
+                    {
+                        nBytesPenalty += 1000*100;
+		            }
+                    if (txout.nValue > MAX_THRESHOLD*700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*1900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*2900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*3900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*4900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*5900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*6900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*7900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*8900)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9000)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9100)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9200)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9300)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9400)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9500)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9600)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9700)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9800)
+                    {
+                        nBytesPenalty += 1000*100;
+                    }
+					if (txout.nValue > MAX_THRESHOLD*9900)
+                    {
+                        nBytesPenalty += 1000*100;
                     }
                     txNew.vout.push_back(txout);
                 }
@@ -2629,7 +3037,7 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
                     currentConfirmationTarget = coinControl->nConfirmTarget;
 
                 // Can we complete this as a free transaction?
-                if (fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE)
+                if (!nBytesPenalty && fSendFreeTransactions && nBytes <= MAX_FREE_TRANSACTION_CREATE_SIZE)
                 {
                     // Not enough fee: enough priority?
                     double dPriorityNeeded = mempool.estimateSmartPriority(currentConfirmationTarget);
@@ -2638,7 +3046,7 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
                         break;
                 }
 
-                CAmount nFeeNeeded = GetMinimumFee(nBytes, currentConfirmationTarget, mempool);
+                CAmount nFeeNeeded = GetMinimumFee(nBytes + nBytesPenalty , currentConfirmationTarget, mempool);
                 if (coinControl && nFeeNeeded > 0 && coinControl->nMinimumTotalFee > nFeeNeeded) {
                     nFeeNeeded = coinControl->nMinimumTotalFee;
                 }
