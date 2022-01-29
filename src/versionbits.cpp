@@ -9,15 +9,15 @@
 const struct BIP9DeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_BITS_DEPLOYMENTS] = {
     {
         /*.name =*/ "testdummy",
-        /*.gbt_force =*/ true,
+        /*.gbt_force =*/ false,
     },
     {
         /*.name =*/ "csv",
-        /*.gbt_force =*/ true,
+        /*.gbt_force =*/ false,
     },
     {
         /*.name =*/ "segwit",
-        /*.gbt_force =*/ true,
+        /*.gbt_force =*/ false,
     }
 };
 
