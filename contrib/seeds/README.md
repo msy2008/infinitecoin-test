@@ -6,10 +6,9 @@ Utility to generate the seeds.txt list that is compiled into the client
 Be sure to update `PATTERN_AGENT` in `makeseeds.py` to include the current version,
 and remove old versions as necessary.
 
-The seeds compiled into the release are created from poolers's DNS seed data, like this:
+The seed compiled into the build is manually created from https://chainz.cryptoid.info/ifc/#!network
+(see [contrib/seeds/nodes_main.txt](/contrib/seeds/nodes_main.txt)).
 
-    curl -s https://www.litecoinpool.org/seeds.txt > seeds_main.txt
-    python3 makeseeds.py < seeds_main.txt > nodes_main.txt
     python3 generate-seeds.py . > ../../src/chainparamsseeds.h
 
 ## Dependencies
