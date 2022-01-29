@@ -190,7 +190,7 @@ public:
             nSize += (32 + 4 + 1 + 107 + 4); // the 148 mentioned above
         }
 
-        return 3 * minRelayTxFee.GetFee(nSize);
+        return minRelayTxFee.GetFee(nSize);
     }
 
     bool IsDust(const CFeeRate &minRelayTxFee) const
