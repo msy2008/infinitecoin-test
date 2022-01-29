@@ -204,8 +204,8 @@ UniValue addnode(const JSONRPCRequest& request)
             "1. \"node\"     (string, required) The node (see getpeerinfo for nodes)\n"
             "2. \"command\"  (string, required) 'add' to add a node to the list, 'remove' to remove a node from the list, 'onetry' to try a connection to the node once\n"
             "\nExamples:\n"
-            + HelpExampleCli("addnode", "\"192.168.0.6:9333\" \"onetry\"")
-            + HelpExampleRpc("addnode", "\"192.168.0.6:9333\", \"onetry\"")
+            + HelpExampleCli("addnode", "\"192.168.0.6:9321\" \"onetry\"")
+            + HelpExampleRpc("addnode", "\"192.168.0.6:9321\", \"onetry\"")
         );
 
     if(!g_connman)
@@ -243,8 +243,8 @@ UniValue disconnectnode(const JSONRPCRequest& request)
             "\nArguments:\n"
             "1. \"address\"     (string, required) The IP address/port of the node\n"
             "\nExamples:\n"
-            + HelpExampleCli("disconnectnode", "\"192.168.0.6:9333\"")
-            + HelpExampleRpc("disconnectnode", "\"192.168.0.6:9333\"")
+            + HelpExampleCli("disconnectnode", "\"192.168.0.6:9321\"")
+            + HelpExampleRpc("disconnectnode", "\"192.168.0.6:9321\"")
         );
 
     if(!g_connman)
@@ -273,7 +273,7 @@ UniValue getaddednodeinfo(const JSONRPCRequest& request)
             "    \"connected\" : true|false,          (boolean) If connected\n"
             "    \"addresses\" : [                    (list of objects) Only when connected = true\n"
             "       {\n"
-            "         \"address\" : \"192.168.0.201:9333\",  (string) The litecoin server IP and port we're connected to\n"
+            "         \"address\" : \"192.168.0.201:9321\",  (string) The infinitecoin server IP and port we're connected to\n"
             "         \"connected\" : \"outbound\"           (string) connection, inbound or outbound\n"
             "       }\n"
             "     ]\n"
@@ -506,7 +506,7 @@ UniValue setban(const JSONRPCRequest& request)
         LookupSubNet(request.params[0].get_str().c_str(), subNet);
 
     if (! (isSubnet ? subNet.IsValid() : netAddr.IsValid()) )
-        throw JSONRPCError(RPC_CLIENT_NODE_ALREADY_ADDED, "Error: Invalid IP/Subnet");
+        throw JSONRPCError(RPC_CLIENT_INVALID_IP_OR_SUBNET, "Error: Invalid IP/Subnet");
 
     if (strCommand == "add")
     {
@@ -526,7 +526,7 @@ UniValue setban(const JSONRPCRequest& request)
     else if(strCommand == "remove")
     {
         if (!( isSubnet ? g_connman->Unban(subNet) : g_connman->Unban(netAddr) ))
-            throw JSONRPCError(RPC_MISC_ERROR, "Error: Unban failed");
+            throw JSONRPCError(RPC_CLIENT_INVALID_IP_OR_SUBNET, "Error: Unban failed. Requested address/subnet was not previously banned.");
     }
     return NullUniValue;
 }
