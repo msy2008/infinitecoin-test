@@ -44,7 +44,8 @@ extern bool fWalletRbf;
 
 extern CAmount nMinimumInputThreshold;
 
-static const unsigned int DEFAULT_KEYPOOL_SIZE = 100;
+//! -change addresses default
+static const unsigned int DEFAULT_KEYPOOL_SIZE = 200;
 //! -paytxfee default
 static const CAmount DEFAULT_TRANSACTION_FEE = 100000000;  // 1IFC
 //! -fallbackfee default
