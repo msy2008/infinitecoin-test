@@ -954,6 +954,38 @@ QString formatTimeOffset(int64_t nTimeOffset)
   return QString(QObject::tr("%1 s")).arg(QString::number((int)nTimeOffset, 10));
 }
 
+QString formatDataSizeValue(uint64_t uValue)
+{
+    // Why handle these comparisons directly, instead of a clever algorithm?
+    // This is likely to be called in a tight loop, so avoid the overhead of
+    // setting up a constant list and walking an iterator.
+    static const uint64_t TERABYTE_SIZE = UINT64_C(1024*1024*1024*1024);
+    static const uint64_t GIGABYTE_SIZE = UINT64_C(1024*1024*1024);
+    static const uint64_t MEGABYTE_SIZE = UINT64_C(1024*1024);
+    static const uint64_t KILOBYTE_SIZE = UINT64_C(1024);
+
+    QString unitFormat = QObject::tr("%1 B");
+
+    if (uValue == std::numeric_limits<int64_t>::max()/1e6 || uValue == 0)
+        return QObject::tr("N/A");
+
+    if (uValue > TERABYTE_SIZE) {
+        unitFormat = QObject::tr("%1 TB");
+        uValue /= TERABYTE_SIZE;
+    } else if (uValue > GIGABYTE_SIZE) {
+        unitFormat = QObject::tr("%1 GB");
+        uValue /= GIGABYTE_SIZE;
+    } else if (uValue > MEGABYTE_SIZE) {
+        unitFormat = QObject::tr("%1 MB");
+        uValue /= MEGABYTE_SIZE;
+    } else if (uValue > KILOBYTE_SIZE) {
+        unitFormat = QObject::tr("%1 KB");
+        uValue /= KILOBYTE_SIZE;
+    }
+
+    return QString(unitFormat).arg(QString::number(uValue), 10);
+}    
+
 QString formatNiceTimeOffset(qint64 secs)
 {
     // Represent time from last generated block in human readable text

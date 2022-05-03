@@ -33,6 +33,10 @@ bool NodeLessThan::operator()(const CNodeCombinedStats &left, const CNodeCombine
         return pLeft->cleanSubVer.compare(pRight->cleanSubVer) < 0;
     case PeerTableModel::Ping:
         return pLeft->dMinPing < pRight->dMinPing;
+    case PeerTableModel::BytesSent:
+        return pLeft->nSendBytes < pRight->nSendBytes;
+    case PeerTableModel::BytesReceived:
+        return pLeft->nRecvBytes < pRight->nRecvBytes;        
     }
 
     return false;
@@ -114,7 +118,7 @@ PeerTableModel::PeerTableModel(ClientModel *parent) :
     clientModel(parent),
     timer(0)
 {
-    columns << tr("NodeId") << tr("Node/Service") << tr("User Agent") << tr("Ping");
+    columns << tr("NodeId") << tr("Node/Service") << tr("User Agent") << tr("Ping") << tr("Bytes Sent") << tr("Bytes Received");
     priv.reset(new PeerTablePriv());
     // default to unsorted
     priv->sortColumn = -1;
@@ -173,6 +177,10 @@ QVariant PeerTableModel::data(const QModelIndex &index, int role) const
             return QString::fromStdString(rec->nodeStats.cleanSubVer);
         case Ping:
             return GUIUtil::formatPingTime(rec->nodeStats.dMinPing);
+        case BytesSent:
+            return GUIUtil::formatDataSizeValue(rec->nodeStats.nSendBytes);
+        case BytesReceived:
+            return GUIUtil::formatDataSizeValue(rec->nodeStats.nRecvBytes);        
         }
     } else if (role == Qt::TextAlignmentRole) {
         if (index.column() == Ping)
