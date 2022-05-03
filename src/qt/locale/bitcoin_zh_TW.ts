@@ -1372,6 +1372,14 @@
         <source>Ping</source>
         <translation>Ping  時間</translation>
     </message>
+    <message>
+        <source>Bytes Sent</source>
+        <translation>發送的字節數</translation>
+    </message>
+    <message>
+        <source>Bytes Received</source>
+        <translation>收到的字節數</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>

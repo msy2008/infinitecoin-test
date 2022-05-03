@@ -892,7 +892,7 @@
     </message>
     <message>
         <source>Last block time</source>
-        <translation>上一数据块时间</translation>
+        <translation>上个区块时间</translation>
     </message>
     <message>
         <source>Progress</source>
@@ -1358,6 +1358,14 @@
         <source>Ping</source>
         <translation> </translation>
     </message>
+    <message>
+        <source>Bytes Sent</source>
+        <translation>发送的字节数</translation>
+    </message>
+    <message>
+        <source>Bytes Received</source>
+        <translation>收到的字节数</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -1512,15 +1520,15 @@
     </message>
     <message>
         <source>Block chain</source>
-        <translation>数据链</translation>
+        <translation>区块链</translation>
     </message>
     <message>
         <source>Current number of blocks</source>
-        <translation>当前数据块数量</translation>
+        <translation>当前区块数量</translation>
     </message>
     <message>
         <source>Memory Pool</source>
-        <translation>资金池</translation>
+        <translation>内存池</translation>
     </message>
     <message>
         <source>Current number of transactions</source>
@@ -1628,7 +1636,7 @@
     </message>
     <message>
         <source>Last block time</source>
-        <translation>上一数据块时间</translation>
+        <translation>上个区块时间</translation>
     </message>
     <message>
         <source>&amp;Open</source>
