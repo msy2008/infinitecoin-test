@@ -1166,6 +1166,9 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
     int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
+    // Force block reward to zero when right shift is undefined.
+    if ((halvings >= 64) && (halvings < 99)) 
+        return 0;
     // New consensus, regaining block rewards, this is a life-and-death reform!
     if (halvings >= 99)    // 8553600
         return 1000 * COIN;
