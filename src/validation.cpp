@@ -1172,6 +1172,14 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     // New consensus, regaining block rewards, this is a life-and-death reform!
     if (halvings >= 99)    // 8553600
         return 1000 * COIN;
+    // Infinitecoin is preparing to equal the total supply of Dogecoin in 4 years to ensure that the market has enough chips for transactions. 
+    if ((halvings >= 114) && (halvings < 138))    // 9849600-11923199 about 2 years
+        return 20000 * COIN;
+    if ((halvings >= 138) && (halvings < 162))    // 11923200-13996799 about 2 years
+        return 10000 * COIN;
+   // Starting from height  13996800, Infinitecoin will forever have the same block reward as Dogecoin. DOGE:1440*10000=IFC:2880*5000
+     if (halvings >= 162)    // 13996800+
+        return 5000 * COIN;
 
     CAmount nSubsidy = 524288 * COIN;
     // Subsidy is cut in half every 86400 blocks which will occur approximately every 1 month.
