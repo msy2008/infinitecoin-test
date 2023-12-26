@@ -1170,7 +1170,7 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     if ((halvings >= 64) && (halvings < 99)) 
         return 0;
     // New consensus, regaining block rewards, this is a life-and-death reform!
-    if (halvings >= 99)    // 8553600
+    if ((halvings >= 99) && (halvings < 114))    // 8553600-9849599 about 15 months
         return 1000 * COIN;
     // Infinitecoin is preparing to equal the total supply of Dogecoin in 4 years to ensure that the market has enough chips for transactions. 
     if ((halvings >= 114) && (halvings < 138))    // 9849600-11923199 about 2 years
