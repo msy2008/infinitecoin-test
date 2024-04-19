@@ -47,17 +47,17 @@ extern CAmount nMinimumInputThreshold;
 //! -change addresses default
 static const unsigned int DEFAULT_KEYPOOL_SIZE = 200;
 //! -paytxfee default
-static const CAmount DEFAULT_TRANSACTION_FEE = 100000000;  // 1IFC
+static const CAmount DEFAULT_TRANSACTION_FEE = COIN;  // 1IFC
 //! -fallbackfee default
-static const CAmount DEFAULT_FALLBACK_FEE = 100000000;  // 1IFC
+static const CAmount DEFAULT_FALLBACK_FEE = COIN;  // 1IFC
 //! -mintxfee default
-static const CAmount DEFAULT_TRANSACTION_MINFEE = 100000000;  // 1IFC
+static const CAmount DEFAULT_TRANSACTION_MINFEE = COIN;  // 1IFC
 //! minimum recommended increment for BIP 125 replacement txs
 static const CAmount WALLET_INCREMENTAL_RELAY_FEE = 5000;
 //! target minimum change amount
-static const CAmount MIN_CHANGE = CENT;
+static const CAmount MIN_CHANGE = COIN;  // 1IFC
 //! final minimum change amount after paying for fees
-static const CAmount MIN_FINAL_CHANGE = MIN_CHANGE/2;
+static const CAmount MIN_FINAL_CHANGE = COIN;  // 1IFC
 //! Default for -spendzeroconfchange
 static const bool DEFAULT_SPEND_ZEROCONF_CHANGE = true;
 //! Default for -sendfreetransactions
