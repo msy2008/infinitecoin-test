@@ -18,8 +18,10 @@ QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
     unitlist.append(BTC);
-    unitlist.append(mBTC);
-    unitlist.append(uBTC);
+    unitlist.append(kBTC);
+    unitlist.append(MBTC);
+    //unitlist.append(mBTC);
+    //unitlist.append(uBTC);
     return unitlist;
 }
 
@@ -27,10 +29,12 @@ bool BitcoinUnits::valid(int unit)
 {
     switch(unit)
     {
+    case MBTC:
+    case kBTC:
     case BTC:
+        return true;
     case mBTC:
     case uBTC:
-        return true;
     default:
         return false;
     }
@@ -40,6 +44,8 @@ QString BitcoinUnits::name(int unit)
 {
     switch(unit)
     {
+    case MBTC: return QString("MIFC");
+    case kBTC: return QString("kIFC");
     case BTC: return QString("IFC");
     case mBTC: return QString("mIFC");
     case uBTC: return QString::fromUtf8("μIFC");
@@ -51,6 +57,8 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
+    case MBTC: return QString("Mega-Infinitecoins (1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case kBTC: return QString("Kilo-Infinitecoins (1" THIN_SP_UTF8 "000)");
     case BTC: return QString("Infinitecoins");
     case mBTC: return QString("Milli-Infinitecoins (1 / 1" THIN_SP_UTF8 "000)");
     case uBTC: return QString("Micro-Infinitecoins (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
@@ -62,6 +70,8 @@ qint64 BitcoinUnits::factor(int unit)
 {
     switch(unit)
     {
+    case MBTC: return 100000000000000;
+    case kBTC: return 100000000000;
     case BTC:  return 100000000;
     case mBTC: return 100000;
     case uBTC: return 100;
@@ -73,6 +83,8 @@ int BitcoinUnits::decimals(int unit)
 {
     switch(unit)
     {
+    case MBTC: return 14;
+    case kBTC: return 11;
     case BTC: return 8;
     case mBTC: return 5;
     case uBTC: return 2;
