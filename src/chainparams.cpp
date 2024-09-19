@@ -107,10 +107,17 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
+        if (time(NULL) >= 1726720100) { 
+        pchMessageStart[0] = 0xfa;
+        pchMessageStart[1] = 0xbe;
+        pchMessageStart[2] = 0xc0;
+        pchMessageStart[3] = 0xde;
+        } else {
         pchMessageStart[0] = 0xfb;
         pchMessageStart[1] = 0xc0;
         pchMessageStart[2] = 0xb6;
         pchMessageStart[3] = 0xdb;
+        }
         nDefaultPort = 9321;
         nPruneAfterHeight = 100000;
 
