@@ -56,7 +56,7 @@ public:
         MAX_BASE58_TYPES
     };
 
-    const Consensus::Params& GetConsensus() const { return consensus; }
+    CMessageHeader::MessageStartChars& MessageStart() { return pchMessageStart; }
     const CMessageHeader::MessageStartChars& MessageStart() const;
     int GetDefaultPort() const { return nDefaultPort; }
 
