@@ -79,7 +79,11 @@ public:
     const ChainTxData& TxData() const { return chainTxData; }  
   
     // Allow modification of pchMessageStart in const methods  
-    void ModifyMessageStart(const CMessageHeader::MessageStartChars& newStart) { pchMessageStart = newStart; }  
+    void ModifyMessageStart(const CMessageHeader::MessageStartChars& newStart) {  
+        for (int i = 0; i < 4; ++i) {  
+            pchMessageStart[i] = newStart[i];  
+        }  
+    }
   
 protected:  
     CChainParams() {}  
