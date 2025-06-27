@@ -121,6 +121,11 @@ public:
 
         // Note that of those with the service bits flag, most only support a subset of possible options
         vSeeds.push_back(CDNSSeedData("infinitecoin.com", "dnsseed.infinitecoin.com", true));
+	vSeeds.push_back(CDNSSeedData("infinitecoin.com", "dnsseed2.infinitecoin.com", true));
+	vSeeds.push_back(CDNSSeedData("infinitecoin.com", "dnsseed3.infinitecoin.com", true));
+	vSeeds.push_back(CDNSSeedData("infinitecoin.com", "dnsseed4.infinitecoin.com", true));
+	vSeeds.push_back(CDNSSeedData("infinitecoin.com", "dnsseed5.infinitecoin.com", true));
+	vSeeds.push_back(CDNSSeedData("infinitecoin.com", "dnsseed6.infinitecoin.com", true));
         vSeeds.push_back(CDNSSeedData("ifcf2pool.com", "dnsseed.ifcf2pool.com", true));
         vSeeds.push_back(CDNSSeedData("ifcp2pool.com", "dnsseed.ifcp2pool.com", true));
         vSeeds.push_back(CDNSSeedData("amxpool.com", "dnsseed.amxpool.com", true));
