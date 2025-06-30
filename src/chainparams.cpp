@@ -109,7 +109,7 @@ public:
          */
 	    
 	// Update to the new network magic number based on the timestamp
-	// The original developer of Ininitecoin used the same network magic number as Litecoin, which caused node mixing and cross-connection.
+	// The original developer of Infinitecoin used the same network magic number as Litecoin, which caused node mixing and cross-connection.
         // 2025-07-07 12:00:00  UTC
         if (time(NULL) >= 1751889600) {   
         pchMessageStart[0] = 0xfa;
